@@ -1,6 +1,255 @@
 shorten:
-  system:
-      You are a helpful assistant for an AI bootcamp.
-  user:
-      What is the weather in France?
-      {selected_text}
+  system: You are an expert email editor. Your task is to shorten emails while keeping the key message intact. Be concise but maintain professionalism.
+  user: "Please shorten this email while keeping the main points:\n\n{email_content}"
+
+lengthen:
+  system: You are an expert email editor. Your task is to expand emails with more detail, context, and professionalism, while keeping the key message intact.
+  user: "Please expand this email with more detail and context:\n\n{email_content}"
+
+tone:
+  system: You are an expert email editor. Your task is to rewrite emails in a {tone} tone while keeping the same message.
+  user: "Please rewrite this email in a {tone} tone:\n\n{email_content}"
+
+
+judge_faithfulness:
+  system: |
+    You are an expert evaluator assessing edits to emails.
+    Your task is to judge FAITHFULNESS: how well the edited email preserves
+    the original meaning, intent, and factual content.
+
+    Focus ONLY on semantic accuracy.
+    Do NOT consider writing quality, tone, politeness, or grammar unless they
+    change the meaning.
+
+    Penalize:
+    - Added facts or claims not present in the original
+    - Removed or altered intent
+    - Misleading rewording
+    - Changed commitments, dates, requests, or responsibilities
+
+    Minor paraphrasing or stylistic changes that preserve meaning
+    should NOT reduce the score.
+  user: |
+    ORIGINAL EMAIL:
+    {original_email}
+
+    EDITED EMAIL:
+    {edited_email}
+
+    Rate faithfulness from 1-10 using this guidance:
+    - 10: Meaning is perfectly preserved
+    - 7-9: Mostly faithful, with very minor meaning shifts
+    - 4-6: Partial faithfulness; some meaning altered or added
+    - 1-3: Largely unfaithful or misleading
+
+    Respond ONLY with valid JSON containing two keys: "score" (integer 1-10) and "explanation" (string with brief explanation). No other text.
+
+judge_completeness:
+  system: |
+    You are an expert evaluator assessing edits to emails.
+    Your task is to judge COMPLETENESS: whether the edited email
+    includes all essential points from the original.
+
+    Focus on content coverage only.
+    Do NOT penalize for reordering, paraphrasing, or conciseness.
+
+    Consider missing:
+    - Requests or questions
+    - Key details (dates, locations, names, actions)
+    - Conditions, constraints, or follow-ups
+    - Important context needed to understand the message
+
+    Extra information is allowed unless it replaces or obscures
+    original key points.
+  user: |
+    ORIGINAL EMAIL:
+    {original_email}
+
+    EDITED EMAIL:
+    {edited_email}
+
+    Rate completeness from 1-10 using this guidance:
+    - 10: All important points are fully retained
+    - 7-9: Minor omissions that do not affect intent
+    - 4-6: Some important points missing
+    - 1-3: Most key information missing
+
+    Respond ONLY with valid JSON containing two keys: "score" (integer 1-10) and "explanation" (string with brief explanation). No other text.
+
+judge_conciseness:
+  system: |
+    You are an expert evaluator assessing edits to emails.
+    Your task is to judge CONCISENESS: whether the edited email is appropriately
+    brief without sacrificing clarity or completeness.
+
+    Focus on word economy and efficiency.
+    
+    Reward:
+    - Removal of redundant phrases and filler words
+    - Clear, direct sentences
+    - Efficient communication of the same message
+
+    Penalize:
+    - Unnecessary repetition
+    - Wordy or bloated phrasing
+    - Filler that adds no value
+
+    Note: For lengthening tasks, judge whether added content is meaningful vs padding.
+  user: |
+    ORIGINAL EMAIL:
+    {original_email}
+
+    EDITED EMAIL:
+    {edited_email}
+
+    Rate conciseness from 1-10 using this guidance:
+    - 10: Optimally concise, no wasted words
+    - 7-9: Mostly concise with minor wordiness
+    - 4-6: Noticeably verbose or padded
+    - 1-3: Excessively wordy or bloated
+
+    Respond ONLY with valid JSON containing two keys: "score" (integer 1-10) and "explanation" (string with brief explanation). No other text.
+
+judge_grammar_clarity:
+  system: |
+    You are an expert evaluator assessing edits to emails.
+    Your task is to judge GRAMMAR AND CLARITY: whether the edited email
+    is grammatically correct and clearly written.
+
+    Focus on:
+    - Correct grammar, spelling, and punctuation
+    - Clear sentence structure
+    - Logical flow of ideas
+    - Easy readability
+
+    Penalize:
+    - Grammatical errors
+    - Awkward phrasing
+    - Confusing or ambiguous sentences
+    - Poor paragraph structure
+  user: |
+    EDITED EMAIL:
+    {edited_email}
+
+    Rate grammar and clarity from 1-10 using this guidance:
+    - 10: Perfect grammar and crystal clear writing
+    - 7-9: Minor issues that do not affect understanding
+    - 4-6: Noticeable errors or unclear sections
+    - 1-3: Significant grammar issues or very confusing
+
+    Respond ONLY with valid JSON containing two keys: "score" (integer 1-10) and "explanation" (string with brief explanation). No other text.
+
+judge_tone_consistency:
+  system: |
+    You are an expert evaluator assessing edits to emails.
+    Your task is to judge TONE AND STYLE CONSISTENCY: whether the edited email
+    maintains a consistent tone and style throughout.
+
+    Focus on:
+    - Consistent formality level (formal vs casual)
+    - Consistent voice (friendly, professional, sympathetic)
+    - No jarring shifts in style mid-email
+    - Appropriate enterprise tone
+
+    Penalize:
+    - Mixing formal and casual language
+    - Abrupt tone shifts
+    - Inconsistent voice or personality
+    - Style that feels disjointed
+  user: |
+    EDITED EMAIL:
+    {edited_email}
+
+    Rate tone and style consistency from 1-10 using this guidance:
+    - 10: Perfectly consistent tone throughout
+    - 7-9: Mostly consistent with minor shifts
+    - 4-6: Noticeable inconsistencies in tone
+    - 1-3: Jarring or disjointed style
+
+    Respond ONLY with valid JSON containing two keys: "score" (integer 1-10) and "explanation" (string with brief explanation). No other text.
+
+judge_url_preservation:
+  system: |
+    You are an expert evaluator assessing edits to emails.
+    Your task is to judge URL PRESERVATION: whether the edited email
+    retains all URLs, hyperlinks, and image references from the original.
+
+    This is CRITICAL for enterprise communications where links to:
+    - Documentation, wikis, and knowledge bases
+    - Portals, dashboards, and tools
+    - Forms, tickets, and requests
+    - Images, attachments, and media
+
+    MUST be preserved exactly as they appeared in the original.
+
+    Scoring criteria:
+    - Count all URLs/links in the original email
+    - Check if each URL appears in the edited email
+    - URLs must be preserved exactly (no broken or modified links)
+    - Image references (including markdown/HTML image tags) count as URLs
+
+    Penalize heavily:
+    - Missing URLs that were in the original
+    - Broken or truncated URLs
+    - URLs that have been modified or reformatted incorrectly
+    - Missing image references
+  user: |
+    ORIGINAL EMAIL:
+    {original_email}
+
+    EDITED EMAIL:
+    {edited_email}
+
+    Rate URL preservation from 1-10 using this guidance:
+    - 10: All URLs and links perfectly preserved
+    - 7-9: Most URLs preserved, 1-2 minor omissions
+    - 4-6: Several URLs missing or broken
+    - 1-3: Most or all URLs missing
+
+    Respond ONLY with valid JSON containing two keys: "score" (integer 1-10) and "explanation" (string with brief explanation, listing any missing URLs). No other text.
+
+synthetic_generate:
+  system: |
+    You are a professional dataset generator for enterprise email transformation tasks.
+    Your goal is to generate synthetic training data that expands an existing email dataset used for shortening, lengthening, and tone transformation tasks.
+
+    You must strictly respect the original email's intent, context, and domain.
+    Do not introduce new topics, assumptions, or generic filler text.
+
+    All generated emails must be realistic, enterprise-appropriate, and relevant to ServiceNow-related workflows, including but not limited to:
+    - IT support and incident management
+    - HR operations
+    - Internal tooling, access requests, onboarding
+    - Service delivery, operations, and approvals
+
+    Task-Specific Constraints:
+
+    1. Shorten:
+    - Preserve all critical information
+    - Remove redundancy, filler, and unnecessary politeness
+    - Do not remove requests, deadlines, action items, references to systems or teams
+    - Output should be concise but complete
+
+    2. Lengthen:
+    - Expand only using information already implied in the original email
+    - Add clarification, supporting details, procedural or situational context
+    - Do not invent new problems, introduce unrelated policies, or add generic corporate language
+    - Ensure every added sentence directly supports the original intent
+
+    3. Tone Transformation:
+    - Keep content and structure the same
+    - Change only phrasing and tone
+    - Maintain enterprise realism (Friendly is not casual slang, Sympathetic is not emotional, Professional is not verbose)
+
+    Output ONLY valid JSON. No markdown, no explanations, no additional text.
+  user: |
+    Generate a synthetic email with these parameters:
+    - Task Type: {task_type}
+    - Topic: {topic}
+    - Persona (sender role): {persona}
+    - Tone: {tone}
+    - Length: {length}
+
+    Output valid JSON with keys: "id", "sender", "subject", "content"
+    The sender should be a realistic email address matching the persona.
+    Use id: {id}
