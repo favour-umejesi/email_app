@@ -1,10 +1,12 @@
-# AI.Accelerate Bootcamp — Starter Code
+# Email App
 
-This repository contains two Python files that students will use to start their bootcamp projects. Files are:
-- `datasets/`: Dataset directory for each of the three email-helper actions students are expected to support in their apps
-- `app.py`: Starter Streamlit app
+This project is an AI-powered email helper application built as part of the AI.Accelerate Bootcamp. It uses Streamlit for the UI and supports various email-related tasks.
 
-Follow the instructions below to set up your environment, create a virtual environment, and install all required dependencies.
+## Project Structure
+- `datasets/`: Contains `.jsonl` datasets for training/testing email actions.
+- `app.py`: The main Streamlit application.
+- `generate.py`: Script for generating data or processing.
+- `prompts.yaml`: Configuration for AI prompts.
 
 ---
 
@@ -12,28 +14,26 @@ Follow the instructions below to set up your environment, create a virtual envir
 
 ### **1. Clone the repository**
 ```bash
-git clone https://github.com/<your-username>/<your-repo-name>.git
-cd <your-repo-name>
+git clone https://github.com/favour-umejesi/email_app.git
+cd email_app
 ```
 
-### **2. Create a Virtual Environment**
+### **2. Set up a Virtual Environment**
 
 > Recommended: Python 3.9+
 
-A virtual environment keeps your project isolated from your system Python packages.
-
 **macOS / Linux**
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 ```
 
 **Windows**
 ```bash
-python -m venv .venv
-.venv\Scripts\Activate.ps1
+python -m venv venv
+venv\Scripts\activate
 ```
-When activated, your terminal prompt should display (.venv).
+When activated, your terminal prompt should display `(venv)`.
 
 ### **3. Install Required Dependencies**
 
@@ -43,21 +43,12 @@ With the virtual environment activated, install the project dependencies:
 pip install -r requirements.txt
 ```
 
-### **3a. Update Dependencies**
-
-If you install new packages while working on the project:
-
-```bash
-pip install <package-name>
-pip freeze > requirements.txt
-```
-This regenerates requirements.txt so others can install the same environment.
-
 ### **4. Start the app**
-To run the app on Streamlit, run:
+To run the app locally:
 ```bash
 streamlit run app.py
 ```
-It will open a localhost on your browser. Use this to preview all the changes to your app during the bootcamp.
+This will open the app in your default browser at `http://localhost:8501`.
 
-Welcome to AI.Accelerate!
+---
+Welcome to Email App!
